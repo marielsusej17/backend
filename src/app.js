@@ -8,10 +8,10 @@ dotenv.config();
 const app = express();
 
 /* ========================
-   CORS FORZADO (SIN ERRORES)
+   CORS DEFINITIVO (MANUAL)
 ======================== */
 app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Origin", "https://frontend-lake-five-ny8hvbxz4c.vercel.app");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
@@ -20,6 +20,7 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Methods",
     "GET, POST, PUT, DELETE, OPTIONS"
   );
+  res.header("Access-Control-Allow-Credentials", "true");
 
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
@@ -28,19 +29,11 @@ app.use((req, res, next) => {
   next();
 });
 
-/* ========================
-   MIDDLEWARES
-======================== */
+/* ======================== */
 app.use(express.json());
 
-/* ========================
-   ROUTES
-======================== */
 app.use("/api/auth", authRoutes);
 
-/* ========================
-   TEST
-======================== */
 app.get("/", (req, res) => {
   res.send("Backend funcionando 🚀");
 });

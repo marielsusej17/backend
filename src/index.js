@@ -4,35 +4,22 @@ import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
 
-dotenv.config();
+/* ========================
+   ENV (IMPORTANTE)
+======================== */
+dotenv.config({ path: "./.env" });
 
 const app = express();
 
 /* ========================
-   CORS (FIX DEFINITIVO)
+   CORS (LOCAL SIN ERRORES)
 ======================== */
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Permitir sin origin (Postman, apps móviles, etc.)
-    if (!origin) return callback(null, true);
-
-    // Permitir localhost y cualquier frontend de Vercel
-    if (
-      origin.includes("localhost") ||
-      origin.includes("vercel.app")
-    ) {
-      return callback(null, true);
-    }
-
-    return callback(new Error("No permitido por CORS"));
-  },
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 /* ========================
    MIDDLEWARES
