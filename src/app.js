@@ -8,7 +8,7 @@ import vehiculoRoutes from "./routes/vehiculo.routes.js";
 const app = express();
 
 /* ========================
-   CORS CONFIG
+   CORS CONFIG (PRODUCCIÓN FIX)
 ======================== */
 app.use(
   cors({
@@ -16,11 +16,12 @@ app.use(
       "https://frontend-rho-vert-12.vercel.app",
       "http://localhost:5173",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
   })
 );
+
+app.options("*", cors());
 
 /* ========================
    MIDDLEWARES
