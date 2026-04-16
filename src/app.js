@@ -8,11 +8,25 @@ import vehiculoRoutes from './routes/vehiculo.routes.js';
 const app = express();
 
 /* ========================
-   CORS
+   CORS (CORREGIDO)
 ======================== */
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://frontend-lake-five-ny8hvbxz4c.vercel.app'
+];
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: function (origin, callback) {
+      // permitir peticiones sin origin (postman, etc)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('CORS bloqueado: ' + origin));
+      }
+    },
     credentials: true,
   })
 );
@@ -34,6 +48,13 @@ app.use('/api/vehiculos', vehiculoRoutes);
 ======================== */
 app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
+});
+
+/* ========================
+   ROOT (OPCIONAL)
+======================== */
+app.get('/', (req, res) => {
+  res.send('Backend funcionando 🚀');
 });
 
 export default app;

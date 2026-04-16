@@ -5,10 +5,17 @@ import app from './app.js';
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-mongoose.connect(MONGODB_URI)
+/* ========================
+   CONEXIÓN A MONGODB
+======================== */
+mongoose
+  .connect(MONGODB_URI)
   .then(() => {
     console.log('🔌 Conectado a MongoDB Atlas');
 
+    /* ========================
+       INICIAR SERVIDOR
+    ======================== */
     app.listen(PORT, () => {
       console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
     });

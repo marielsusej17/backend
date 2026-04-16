@@ -2,33 +2,37 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.routes.js"; // 🔥 IMPORTANTE
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
 const app = express();
 
-/* CORS */
+/* ========================
+   CORS (FIJO Y FUNCIONANDO)
+======================== */
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
     credentials: true,
   })
 );
 
-/* JSON */
+/* ========================
+   MIDDLEWARES
+======================== */
 app.use(express.json());
 
-/* RUTAS API */
-app.use("/api", authRoutes); // 🔥 ESTO TE FALTA
+/* ========================
+   ROUTES
+======================== */
+app.use("/api/auth", authRoutes);
 
-/* TEST */
+/* ========================
+   TEST ROUTE
+======================== */
 app.get("/", (req, res) => {
   res.send("Backend funcionando 🚀");
 });
 
-const PORT = process.env.PORT || 10000;
-
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
-});
+export default app;
