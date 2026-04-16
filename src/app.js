@@ -10,15 +10,16 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      "https://frontend-rho-vert-12.vercel.app",
+      "http://localhost:5173"
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
-/* ========================
    MIDDLEWARES
-======================== */
 app.use(morgan('dev'));
 app.use(express.json());
 
