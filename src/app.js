@@ -1,60 +1,39 @@
-import express from 'express';
-import cors from 'cors';
-import morgan from 'morgan';
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
 
-import authRoutes from './routes/auth.routes.js';
-import vehiculoRoutes from './routes/vehiculo.routes.js';
+import authRoutes from "./routes/auth.routes.js";
+
+dotenv.config();
 
 const app = express();
 
 /* ========================
-   CORS (CORREGIDO)
+   CORS (FINAL FUNCIONANDO)
 ======================== */
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://frontend-lake-five-ny8hvbxz4c.vercel.app'
-];
+const corsOptions = {
+  origin: "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
+  credentials: true,
+};
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      // permitir peticiones sin origin (postman, etc)
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error('CORS bloqueado: ' + origin));
-      }
-    },
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 🔥 CLAVE
 
 /* ========================
    MIDDLEWARES
 ======================== */
-app.use(morgan('dev'));
 app.use(express.json());
 
 /* ========================
    ROUTES
 ======================== */
-app.use('/api/auth', authRoutes);
-app.use('/api/vehiculos', vehiculoRoutes);
+app.use("/api/auth", authRoutes);
 
 /* ========================
-   HEALTH CHECK
+   TEST
 ======================== */
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
-
-/* ========================
-   ROOT (OPCIONAL)
-======================== */
-app.get('/', (req, res) => {
-  res.send('Backend funcionando 🚀');
+app.get("/", (req, res) => {
+  res.send("Backend funcionando 🚀");
 });
 
 export default app;

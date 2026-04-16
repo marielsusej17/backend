@@ -9,14 +9,15 @@ dotenv.config();
 const app = express();
 
 /* ========================
-   CORS (FIJO Y FUNCIONANDO)
+   CORS (FIX COMPLETO)
 ======================== */
-app.use(
-  cors({
-    origin: "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 🔥 ESTA LÍNEA ES CLAVE
 
 /* ========================
    MIDDLEWARES
