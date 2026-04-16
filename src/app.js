@@ -9,15 +9,21 @@ dotenv.config();
 const app = express();
 
 /* ========================
-   CORS (FINAL FUNCIONANDO)
+   CORS (PRODUCCIÓN FIABLE)
 ======================== */
-const corsOptions = {
-  origin: "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
-  credentials: true,
-};
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://frontend-lake-five-ny8hvbxz4c.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // 🔥 CLAVE
+// preflight
+app.options("*", cors());
 
 /* ========================
    MIDDLEWARES

@@ -4,7 +4,16 @@ import jwt from 'jsonwebtoken';
 
 export const login = async (req, res) => {
   try {
+    console.log("📩 BODY RECIBIDO:", req.body); // 🔥 DEBUG
+
     const { email, password } = req.body;
+
+    // 🔥 Validación básica
+    if (!email || !password) {
+      return res.status(400).json({
+        message: "Email y contraseña son obligatorios",
+      });
+    }
 
     const emailClean = email.trim().toLowerCase();
 
@@ -13,13 +22,17 @@ export const login = async (req, res) => {
     console.log("👤 USER ENCONTRADO:", user);
 
     if (!user) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({
+        message: 'Credenciales inválidas',
+      });
     }
 
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return res.status(401).json({ message: 'Credenciales inválidas' });
+      return res.status(401).json({
+        message: 'Credenciales inválidas',
+      });
     }
 
     const token = jwt.sign(
@@ -28,18 +41,21 @@ export const login = async (req, res) => {
       { expiresIn: process.env.JWT_EXPIRES_IN }
     );
 
-    res.json({
+    return res.status(200).json({
       message: 'Login exitoso',
       token,
       user: {
         id: user._id,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error del servidor' });
+    console.error("❌ ERROR LOGIN:", error);
+
+    return res.status(500).json({
+      message: 'Error del servidor',
+    });
   }
 };
