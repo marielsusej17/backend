@@ -1,43 +1,41 @@
-import express from "express";
-import cors from "cors";
-import morgan from "morgan";
+import express from 'express';
+import cors from 'cors';
+import morgan from 'morgan';
 
-import authRoutes from "./routes/auth.routes.js";
-import vehiculoRoutes from "./routes/vehiculo.routes.js";
+import authRoutes from './routes/auth.routes.js';
+import vehiculoRoutes from './routes/vehiculo.routes.js';
 
 const app = express();
 
 /* ========================
-   CORS CONFIG (PRODUCCIÓN FIX)
+   CORS (FIX LOCAL)
 ======================== */
 app.use(
   cors({
     origin: [
-      "https://frontend-rho-vert-12.vercel.app",
       "http://localhost:5173",
+      process.env.CORS_ORIGIN
     ],
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // 👈 AGREGA ESTO
+    credentials: true,
   })
 );
 /* ========================
    MIDDLEWARES
 ======================== */
-app.use(morgan("dev"));
+app.use(morgan('dev'));
 app.use(express.json());
 
 /* ========================
    ROUTES
 ======================== */
-app.use("/api/auth", authRoutes);
-app.use("/api/vehiculos", vehiculoRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/vehiculos', vehiculoRoutes);
 
 /* ========================
    HEALTH CHECK
 ======================== */
-app.get("/", (req, res) => {
-  res.json({ message: "API funcionando 🚀" });
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
 });
 
 export default app;

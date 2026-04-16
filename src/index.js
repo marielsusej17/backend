@@ -1,34 +1,55 @@
 import express from "express";
 import cors from "cors";
+import mongoose from "mongoose";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.routes.js"; // 🔥 IMPORTANTE
+import authRoutes from "./routes/auth.routes.js";
 
 dotenv.config();
 
 const app = express();
 
-/* CORS */
+/* ========================
+   CONFIG
+======================== */
+const PORT = process.env.PORT || 3000;
+
+/* ========================
+   MIDDLEWARES
+======================== */
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
-/* JSON */
 app.use(express.json());
 
-/* RUTAS API */
-app.use("/api", authRoutes); // 🔥 ESTO TE FALTA
+/* ========================
+   RUTAS
+======================== */
+app.use("/api/auth", authRoutes);
 
-/* TEST */
+/* ========================
+   TEST
+======================== */
 app.get("/", (req, res) => {
   res.send("Backend funcionando 🚀");
 });
 
-const PORT = process.env.PORT || 10000;
+/* ========================
+   CONEXIÓN DB + SERVER
+======================== */
+mongoose
+  .connect(process.env.MONGODB_URI)
+  .then(() => {
+    console.log("🔌 Conectado a MongoDB");
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
-});
+    app.listen(PORT, () => {
+      console.log(`🚀 Servidor en http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("❌ Error DB:", err.message);
+  });
