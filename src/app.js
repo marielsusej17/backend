@@ -7,16 +7,17 @@ import vehiculoRoutes from './routes/vehiculo.routes.js';
 
 const app = express();
 
-/* ========================
-   CORS
-======================== */
+
+
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN,
+    origin: [
+      "https://frontend-rho-vert-12.vercel.app",
+      "http://localhost:5173"
+    ],
     credentials: true,
   })
 );
-
 /* ========================
    MIDDLEWARES
 ======================== */
