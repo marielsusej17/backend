@@ -1,5 +1,4 @@
 import express from "express";
-import cors from "cors";
 import dotenv from "dotenv";
 
 import authRoutes from "./routes/auth.routes.js";
@@ -9,35 +8,25 @@ dotenv.config();
 const app = express();
 
 /* ========================
-   CORS (PRODUCCIÓN PRO)
+   CORS FORZADO (SIN ERRORES)
 ======================== */
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Permitir requests sin origin (Postman, backend, etc.)
-      if (!origin) return callback(null, true);
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
 
-      // Permitir localhost y cualquier deploy de Vercel
-      if (
-        origin.includes("localhost") ||
-        origin.includes("vercel.app")
-      ) {
-        return callback(null, true);
-      }
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
 
-      // Bloquear otros
-      return callback(new Error("No permitido por CORS"));
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
-
-/* ========================
-   PREFLIGHT (IMPORTANTE)
-======================== */
-app.options("*", cors());
+  next();
+});
 
 /* ========================
    MIDDLEWARES
