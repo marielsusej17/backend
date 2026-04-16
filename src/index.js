@@ -2,40 +2,33 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 
-import authRoutes from "./routes/auth.routes.js";
+import authRoutes from "./routes/auth.routes.js"; // 🔥 IMPORTANTE
 
-/* ========================
-   ENV (IMPORTANTE)
-======================== */
-dotenv.config({ path: "./.env" });
+dotenv.config();
 
 const app = express();
 
-/* ========================
-   CORS (LOCAL SIN ERRORES)
-======================== */
+/* CORS */
 app.use(
   cors({
-    origin: true,
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   })
 );
 
-/* ========================
-   MIDDLEWARES
-======================== */
+/* JSON */
 app.use(express.json());
 
-/* ========================
-   ROUTES
-======================== */
-app.use("/api/auth", authRoutes);
+/* RUTAS API */
+app.use("/api", authRoutes); // 🔥 ESTO TE FALTA
 
-/* ========================
-   TEST ROUTE
-======================== */
+/* TEST */
 app.get("/", (req, res) => {
   res.send("Backend funcionando 🚀");
 });
 
-export default app;
+const PORT = process.env.PORT || 10000;
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en puerto ${PORT}`);
+});
