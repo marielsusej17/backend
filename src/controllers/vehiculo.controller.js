@@ -21,12 +21,6 @@ export const createVehiculo = async (req, res, next) => {
 
     const { placa, marca, modelo, anio, mantenimientos } = req.body;
 
-    if (!placa) {
-      return res.status(400).json({
-        message: "La placa es obligatoria",
-      });
-    }
-
     const newVehiculo = await Vehiculo.create({
       placa: placa.trim().toUpperCase(),
       marca: marca?.trim(),
@@ -49,10 +43,10 @@ export const createVehiculo = async (req, res, next) => {
   }
 };
 
-/* ---------------- LISTAR ---------------- */
+/* ---------------- LISTAR (CORREGIDO) ---------------- */
 export const getVehiculos = async (req, res, next) => {
   try {
-    const { q, page = 1, limit = 10 } = req.query;
+    const { q, page = 1, limit = 100 } = req.query;
 
     const filter = q
       ? {
@@ -74,12 +68,8 @@ export const getVehiculos = async (req, res, next) => {
       Vehiculo.countDocuments(filter),
     ]);
 
-    res.json({
-      items,
-      total,
-      page: Number(page),
-      pages: Math.ceil(total / limit),
-    });
+    // ✅ IMPORTANTE: compatibilidad con frontend
+    res.json(items);
   } catch (err) {
     next(err);
   }
