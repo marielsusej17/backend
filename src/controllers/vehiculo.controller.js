@@ -4,6 +4,7 @@ import Vehiculo from "../models/Vehiculo.js";
 /* ---------------- VALIDACIÓN ---------------- */
 const handleValidation = (req, res) => {
   const errors = validationResult(req);
+
   if (!errors.isEmpty()) {
     res.status(400).json({
       ok: false,
@@ -11,6 +12,7 @@ const handleValidation = (req, res) => {
     });
     return true;
   }
+
   return false;
 };
 
@@ -49,40 +51,39 @@ export const createVehiculo = async (req, res, next) => {
   }
 };
 
-/* ---------------- LISTAR + BUSCADOR (FIX IMPORTANTE) ---------------- */
+/* ---------------- LISTAR + BUSCADOR ---------------- */
 export const getVehiculos = async (req, res, next) => {
   try {
-    const { q = "", page = 1, limit = 10 } = req.query;
+    const q = (req.query.q || "").trim();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
 
-    const search = q.trim(); // 🔥 evita espacios vacíos
-
-    const filter = search
+    const filter = q
       ? {
           $or: [
-            { placa: { $regex: search, $options: "i" } },
-            { marca: { $regex: search, $options: "i" } },
-            { modelo: { $regex: search, $options: "i" } },
+            { placa: { $regex: q, $options: "i" } },
+            { marca: { $regex: q, $options: "i" } },
+            { modelo: { $regex: q, $options: "i" } },
           ],
         }
       : {};
 
-    const pageNum = Number(page);
-    const limitNum = Number(limit);
-    const skip = (pageNum - 1) * limitNum;
+    const skip = (page - 1) * limit;
 
     const [items, total] = await Promise.all([
       Vehiculo.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(limitNum),
+        .limit(limit),
+
       Vehiculo.countDocuments(filter),
     ]);
 
     return res.json({
       items,
       total,
-      page: pageNum,
-      pages: Math.ceil(total / limitNum),
+      page,
+      pages: Math.ceil(total / limit),
     });
   } catch (err) {
     next(err);
@@ -102,7 +103,7 @@ export const getVehiculoById = async (req, res, next) => {
       });
     }
 
-    res.json(vehiculo);
+    return res.json(vehiculo);
   } catch (err) {
     next(err);
   }
@@ -123,7 +124,7 @@ export const updateVehiculo = async (req, res, next) => {
       });
     }
 
-    res.json({
+    return res.json({
       message: "Vehículo actualizado",
       data: vehiculo,
     });
@@ -145,7 +146,7 @@ export const deleteVehiculo = async (req, res, next) => {
       });
     }
 
-    res.json({
+    return res.json({
       message: "Vehículo eliminado correctamente",
       placa: vehiculo.placa,
     });
