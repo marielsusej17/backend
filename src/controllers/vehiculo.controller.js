@@ -21,6 +21,12 @@ export const createVehiculo = async (req, res, next) => {
 
     const { placa, marca, modelo, anio, mantenimientos } = req.body;
 
+    if (!placa) {
+      return res.status(400).json({
+        message: "La placa es obligatoria",
+      });
+    }
+
     const newVehiculo = await Vehiculo.create({
       placa: placa.trim().toUpperCase(),
       marca: marca?.trim(),
@@ -43,33 +49,41 @@ export const createVehiculo = async (req, res, next) => {
   }
 };
 
-/* ---------------- LISTAR (CORREGIDO) ---------------- */
+/* ---------------- LISTAR + BUSCADOR (FIX IMPORTANTE) ---------------- */
 export const getVehiculos = async (req, res, next) => {
   try {
-    const { q, page = 1, limit = 100 } = req.query;
+    const { q = "", page = 1, limit = 10 } = req.query;
 
-    const filter = q
+    const search = q.trim(); // 🔥 evita espacios vacíos
+
+    const filter = search
       ? {
           $or: [
-            { placa: new RegExp(q, "i") },
-            { marca: new RegExp(q, "i") },
-            { modelo: new RegExp(q, "i") },
+            { placa: { $regex: search, $options: "i" } },
+            { marca: { $regex: search, $options: "i" } },
+            { modelo: { $regex: search, $options: "i" } },
           ],
         }
       : {};
 
-    const skip = (page - 1) * limit;
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
 
     const [items, total] = await Promise.all([
       Vehiculo.find(filter)
         .sort({ createdAt: -1 })
         .skip(skip)
-        .limit(Number(limit)),
+        .limit(limitNum),
       Vehiculo.countDocuments(filter),
     ]);
 
-    // ✅ IMPORTANTE: compatibilidad con frontend
-    res.json(items);
+    return res.json({
+      items,
+      total,
+      page: pageNum,
+      pages: Math.ceil(total / limitNum),
+    });
   } catch (err) {
     next(err);
   }
