@@ -10,15 +10,10 @@ const app = express();
 /* ========================
    CORS (FIX LOCAL)
 ======================== */
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      process.env.CORS_ORIGIN
-    ],
-    credentials: true,
-  })
-);
+origin: [
+  "http://localhost:5173",
+  "https://frontend-rho-vert-12.vercel.app"
+]
 /* ========================
    MIDDLEWARES
 ======================== */
