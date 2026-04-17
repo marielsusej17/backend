@@ -15,15 +15,32 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 /* ========================
-   MIDDLEWARES
+   CORS (PRODUCCIÓN + LOCAL)
 ======================== */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://frontend-rho-vert-12.vercel.app"
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      // permitir requests sin origin (Postman / Render / health checks)
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Bloqueado por CORS: " + origin));
+    },
     credentials: true,
   })
 );
 
+/* ========================
+   MIDDLEWARES
+======================== */
 app.use(express.json());
 
 /* ========================
@@ -39,7 +56,7 @@ app.get("/", (req, res) => {
 });
 
 /* ========================
-   CONEXIÓN DB + SERVER
+   DB + SERVER
 ======================== */
 mongoose
   .connect(process.env.MONGODB_URI)
@@ -47,7 +64,7 @@ mongoose
     console.log("🔌 Conectado a MongoDB");
 
     app.listen(PORT, () => {
-      console.log(`🚀 Servidor en http://localhost:${PORT}`);
+      console.log(`🚀 Servidor en puerto ${PORT}`);
     });
   })
   .catch((err) => {
