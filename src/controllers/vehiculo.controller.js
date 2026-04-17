@@ -6,11 +6,10 @@ const handleValidation = (req, res) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    res.status(400).json({
+    return res.status(400).json({
       ok: false,
       errors: errors.array(),
     });
-    return true;
   }
 
   return false;
@@ -55,18 +54,21 @@ export const createVehiculo = async (req, res, next) => {
 export const getVehiculos = async (req, res, next) => {
   try {
     const q = (req.query.q || "").trim();
+
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 10;
 
-    const filter = q
-      ? {
-          $or: [
-            { placa: { $regex: q, $options: "i" } },
-            { marca: { $regex: q, $options: "i" } },
-            { modelo: { $regex: q, $options: "i" } },
-          ],
-        }
-      : {};
+    let filter = {};
+
+    if (q) {
+      filter = {
+        $or: [
+          { placa: { $regex: q, $options: "i" } },
+          { marca: { $regex: q, $options: "i" } },
+          { modelo: { $regex: q, $options: "i" } },
+        ],
+      };
+    }
 
     const skip = (page - 1) * limit;
 
